@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { starterPromptPack, defaultRoomSettings } from "@imposter/shared";
-import { createInitialRoomState, lockSubmissions, startGame, submitAnswer, submitVote, scoreRound } from "./index";
+import {
+  createInitialRoomState,
+  lockSubmissions,
+  scoreRound,
+  setPlayerReady,
+  startGame,
+  submitAnswer,
+  submitVote,
+} from "./index";
 
 describe("game engine", () => {
   it("starts a game with the first prompt", () => {
@@ -99,5 +107,23 @@ describe("game engine", () => {
 
     expect(guest?.score).toBe(100);
   });
-});
 
+  it("updates player ready state", () => {
+    const room = createInitialRoomState({
+      code: "ABCDE",
+      host: {
+        id: "host-1",
+        displayName: "Host",
+        ready: false,
+        score: 0,
+        connectionStatus: "connected",
+        role: "host",
+      },
+      settings: defaultRoomSettings,
+    });
+
+    const next = setPlayerReady(room, "host-1", true);
+
+    expect(next.players[0]?.ready).toBe(true);
+  });
+});

@@ -1,6 +1,22 @@
 import { AppShell } from "../../components/shell";
-import { mockPacks } from "../../lib/mock-data";
 import { Card } from "@imposter/ui";
+import { starterPromptPack } from "@imposter/shared";
+
+const packs = [
+  starterPromptPack,
+  {
+    id: "late-night",
+    ownerId: "user-demo",
+    title: "Late Night Chaos",
+    description: "Fast prompts for group play with reveal-and-vote rounds.",
+    visibility: "private" as const,
+    prompts: [
+      { id: "p1", text: "Worst excuse for being late?", sortOrder: 1 },
+      { id: "p2", text: "Pitch a luxury product nobody asked for.", sortOrder: 2 },
+      { id: "p3", text: "Name a haunted app update.", sortOrder: 3 },
+    ],
+  },
+];
 
 export default function PacksPage() {
   return (
@@ -11,7 +27,7 @@ export default function PacksPage() {
       <section className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <Card title="Your packs" eyebrow="Starter data">
           <div className="grid gap-3 text-sm text-white/75">
-            {mockPacks.map((pack) => (
+            {packs.map((pack) => (
               <div key={pack.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
                 <p className="font-semibold text-white">{pack.title}</p>
                 <p className="mt-1">{pack.description}</p>
@@ -41,4 +57,3 @@ export default function PacksPage() {
     </AppShell>
   );
 }
-
