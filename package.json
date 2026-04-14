@@ -1,0 +1,17 @@
+{
+  "name": "imposter-game",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.0.0",
+  "scripts": {
+    "dev": "pnpm -r --parallel --stream --filter web --filter room-server dev",
+    "dev:web": "pnpm --filter web dev",
+    "dev:room": "pnpm --filter room-server dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "seed": "echo \"Run Supabase seed scripts from supabase/seed\"",
+    "migrate": "echo \"Apply SQL files from supabase/migrations via Supabase CLI or dashboard\""
+  }
+}

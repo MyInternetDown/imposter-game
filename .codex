@@ -1,0 +1,7 @@
+Read codex_party_game_build_brief.txt fully and use it as the source of truth.
+Then:
+1. scaffold the repo structure,
+2. create AGENTS.md,
+3. create the docs and schema,
+4. implement the MVP in small verifiable steps,
+5. stop after each major milestone with a summary of what was built and what remains.

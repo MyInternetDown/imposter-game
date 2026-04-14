@@ -1,0 +1,15 @@
+node_modules
+.next
+.turbo
+dist
+coverage
+.wrangler
+.env
+.env.local
+.env.*.local
+pnpm-lock.yaml
+apps/web/.next
+apps/web/node_modules
+apps/room-server/node_modules
+packages/*/node_modules
+

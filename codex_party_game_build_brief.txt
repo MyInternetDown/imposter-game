@@ -1,0 +1,1038 @@
+PROJECT BRIEF FOR CODEX
+Title: Online Multiplayer Party Game Platform
+Version: MVP v1
+Audience: Codex / coding agent
+Owner context: Solo student builder with limited budget
+Primary goal: Build a playable, deployable web platform for hosting online multiplayer party-style games with guest users, registered accounts, custom question packs, live room gameplay, and optional voice/video support.
+
+================================================================================
+0. CORE INSTRUCTION TO CODEX
+================================================================================
+
+You are building a real web product, not a demo toy.
+
+Your job is to create a production-structured MVP for an online multiplayer party game platform that supports:
+- guest users
+- registered users
+- host-created private rooms
+- join-by-room-code flow
+- saved custom question packs for registered users
+- live multiplayer gameplay
+- multiple reveal/play styles
+- text chat
+- microphone voice chat
+- optional camera/video architecture hooks
+
+You must optimize for:
+- low hosting cost
+- student-friendly deployment
+- fast MVP delivery
+- clean future scalability
+- maintainable code
+- strong TypeScript typing
+- basic security and abuse prevention
+
+Do NOT overbuild the first version.
+Do NOT add unnecessary microservices.
+Do NOT implement 8 different games immediately.
+Do NOT build complex matchmaking.
+Do NOT build payments.
+Do NOT build a native mobile app.
+
+Build the MVP first, but structure the code so new game modes can be added later.
+
+You must generate:
+1. a monorepo or clean multi-app repo structure
+2. frontend app
+3. backend/game room state service
+4. database schema and migrations
+5. auth integration
+6. live room state management
+7. one working end-to-end playable game mode
+8. question pack creation and saving
+9. text chat
+10. voice chat integration
+11. deployment config and environment variable examples
+12. local development setup docs
+13. production deployment docs
+14. seed data
+15. reasonable tests for core flows
+
+================================================================================
+1. PRODUCT VISION
+================================================================================
+
+This platform is a web-based online multiplayer social party game system.
+
+Users can:
+- play as guests without full signup
+- create accounts and save their own content
+- host private rooms for friends
+- join rooms with room codes
+- play party games using prompts/questions
+- answer prompts
+- reveal answers either all at once or one at a time
+- vote, score, and continue through rounds
+- use voice chat through microphone
+- possibly use camera later
+- create and save custom question packs
+- host using their own saved packs
+
+The feel should be:
+- easy to join
+- fast to start
+- fun in a group
+- smooth for hosts
+- mobile-friendly enough in browser
+- modern but not overly flashy
+
+Think of the product as:
+“an online multiplayer party game platform for friends, with room-based play, custom prompts, and flexible game modes.”
+
+================================================================================
+2. MVP SCOPE
+================================================================================
+
+The MVP must include ONLY the essential features below.
+
+2.1 User types
+- Guest user:
+  - can join rooms
+  - can play games
+  - can chat
+  - can use voice in room
+  - cannot permanently save private question packs unless upgraded
+- Registered user:
+  - can sign up / log in
+  - can create rooms
+  - can save and manage personal question packs
+  - can host games using saved packs
+  - can view basic game history later if implemented cleanly
+
+2.2 Room system
+- create private room
+- generate room code
+- join room by code
+- lobby before game start
+- player list
+- host controls
+- ready/unready state
+- start game button for host
+- lock room option
+- kick player option
+- simple reconnect flow if a browser refresh happens
+
+2.3 Gameplay
+Implement at least 1 complete mode, but architect for more.
+
+Required supported mechanics in engine:
+- prompt shown to players
+- answer submission phase
+- submission lock after timer or host action
+- reveal phase
+- reveal style A: all answers shown at once
+- reveal style B: one answer shown at a time
+- scoring
+- round progression
+- game end summary
+
+2.4 Content
+- built-in default prompt pack
+- ability for registered users to create custom question packs
+- ability to edit/delete their own packs
+- ability to choose a pack when hosting
+
+2.5 Communication
+- text chat in room
+- voice chat with microphone support
+- camera/video not required in MVP UI, but architecture should leave room for later support
+
+2.6 Basic moderation / safety
+- host can mute text chat for room if needed
+- host can kick players
+- host can lock room
+- simple rate limiting
+- profanity filtering hook for usernames and pack names
+- room expiration
+
+2.7 Out of scope for MVP
+- public matchmaking
+- payments/subscriptions
+- friend graph/social network
+- achievements
+- cosmetics
+- tournaments
+- advanced moderation dashboard
+- deep analytics dashboards
+- native apps
+- full video support in first release
+- many different game genres at launch
+
+================================================================================
+3. RECOMMENDED TECH STACK
+================================================================================
+
+Use the following stack unless there is a strong implementation reason to deviate.
+
+3.1 Frontend
+- Next.js
+- TypeScript
+- App Router preferred
+- Tailwind CSS
+- Zustand or equivalent light state solution if needed
+- React Query / TanStack Query for API data fetching if useful
+
+3.2 Backend / persistent platform services
+- Supabase for:
+  - Postgres
+  - Auth
+  - Storage
+  - possibly some realtime/presence where appropriate
+
+3.3 Real-time room/game state
+- Cloudflare Workers + Durable Objects OR equivalent authoritative room service
+- The active room/game state must be server-authoritative, not client-authoritative
+
+3.4 Voice/video
+- Daily SDK OR LiveKit
+- Start with microphone/audio only in UI
+- Keep camera/video optional and disabled by default
+- Build abstraction layer so provider can be swapped later
+
+3.5 Hosting
+Preferred target architecture:
+- frontend deployed to Vercel or Cloudflare Pages
+- game room backend deployed to Cloudflare Workers
+- database/auth on Supabase
+- audio/video provider externalized
+
+3.6 Repo / package management
+- pnpm monorepo preferred
+- use shared packages for types and game engine logic
+
+================================================================================
+4. HIGH-LEVEL ARCHITECTURE
+================================================================================
+
+Use a clear separation of concerns.
+
+4.1 Persistent vs live state
+Persistent data belongs in database:
+- users
+- profiles
+- question packs
+- prompts
+- room metadata
+- past game sessions
+- analytics events
+- moderation logs
+
+Live room state belongs in authoritative room service:
+- connected players
+- ready states
+- current round
+- current timer
+- submitted answers in active round
+- reveal order
+- current scores
+- host commands
+- transient chat events if not persisted
+
+Do NOT rely on the frontend as the source of truth for game state.
+Do NOT rely on client timers for critical round logic.
+Do NOT use only database polling for gameplay.
+
+4.2 Suggested repo structure
+Create something close to this:
+
+/apps
+  /web
+  /room-server
+
+/packages
+  /ui
+  /types
+  /game-engine
+  /db
+  /shared
+  /voice
+
+/docs
+  product-spec.md
+  architecture.md
+  local-development.md
+  deployment.md
+
+/supabase
+  /migrations
+  /seed
+
+/infrastructure
+  env.example
+  cloudflare
+  vercel
+
+4.3 Responsibilities
+apps/web:
+- landing page
+- login/signup/guest join
+- dashboard
+- pack editor
+- room lobby
+- live room UI
+- host controls
+- chat panel
+- voice controls
+
+apps/room-server:
+- room creation coordination
+- room join validation
+- authoritative game state
+- websocket handling
+- round state machine
+- timers
+- scoring
+- server-side validation of gameplay actions
+
+packages/game-engine:
+- generic game state interfaces
+- mode config
+- phase transitions
+- scoring logic contracts
+- reusable utilities
+
+packages/types:
+- shared TypeScript types
+- event contracts
+- DTOs
+- API payload types
+
+packages/db:
+- typed database access helpers
+- schema adapters if useful
+
+packages/voice:
+- abstraction for Daily/LiveKit provider integration
+
+================================================================================
+5. GAME ENGINE DESIGN
+================================================================================
+
+The platform must be designed as a game engine + configurable modes, not as one giant hardcoded game.
+
+5.1 Core gameplay concepts
+Design around these concepts:
+- Room
+- Player
+- Host
+- GameSession
+- Round
+- Prompt
+- Submission
+- RevealPhase
+- VotePhase
+- ScoreRule
+- TimerRule
+- WinRule
+- GameMode
+
+5.2 Game mode model
+A mode should be configurable with fields such as:
+- id
+- name
+- description
+- answer style
+- reveal style
+- timer duration
+- whether voting is enabled
+- how scoring works
+- round count
+- whether host moderates reveal progression
+
+Example ideas:
+- answerStyle: simultaneous / turn_based
+- revealStyle: all_at_once / one_by_one
+- scoringRule: audience_vote / host_choice / custom
+
+5.3 MVP mode requirement
+Implement one complete working mode using the engine.
+Example MVP mode:
+- everyone gets the same prompt
+- everyone submits one answer
+- answers are locked
+- answers are revealed all at once or one at a time depending on room settings
+- players vote for favorite answer except their own
+- scores update
+- next round starts
+- after N rounds, final scoreboard appears
+
+5.4 Future-proofing
+The code should make it easy later to add:
+- hidden role modes
+- judge-based modes
+- team modes
+- bluffing modes
+- rotating prompt ownership
+- host-driven custom scoring
+
+================================================================================
+6. USER FLOWS
+================================================================================
+
+Implement these flows cleanly.
+
+6.1 Guest flow
+- user lands on homepage
+- user clicks “Join as guest”
+- user enters display name
+- temporary guest profile/session created
+- user enters room code or joins via invite link
+- user waits in lobby
+- user plays game
+- on exit, data is temporary
+- optional prompt to upgrade to account later
+
+6.2 Registered user flow
+- sign up / log in
+- create profile
+- create/edit/delete question packs
+- create room
+- configure room settings
+- choose game mode
+- choose question pack
+- invite friends with room code or URL
+- host game
+- optionally resume account session later
+
+6.3 Host flow
+- create room
+- room code generated
+- choose settings:
+  - max players
+  - reveal style
+  - prompt pack
+  - round count
+  - timer length
+  - room lock
+- players join
+- host starts game
+- host can:
+  - kick player
+  - lock room
+  - end game
+  - advance phase if needed
+  - mute chat if implemented
+
+6.4 Reconnect flow
+- if player refreshes page, attempt rejoin using session token
+- restore seat if still valid
+- restore current room state
+- prevent duplicate player instances where possible
+
+================================================================================
+7. DATABASE DESIGN
+================================================================================
+
+Design a practical normalized schema. Use migrations.
+
+Required baseline tables:
+- users (managed by auth provider if applicable)
+- profiles
+- guest_sessions
+- question_packs
+- question_pack_items
+- rooms
+- room_members
+- game_sessions
+- game_rounds
+- round_submissions
+- round_votes
+- score_entries
+- room_events or audit_logs (optional)
+- moderation_actions (optional but useful)
+
+7.1 Example responsibilities
+profiles:
+- user_id
+- display_name
+- avatar_url optional
+- created_at
+
+guest_sessions:
+- guest_id
+- display_name
+- expiry
+- optional reconnect token
+
+question_packs:
+- id
+- owner_user_id
+- title
+- description
+- visibility (private/unlisted maybe)
+- created_at
+- updated_at
+
+question_pack_items:
+- id
+- pack_id
+- prompt_text
+- tags optional
+- sort_order
+
+rooms:
+- id
+- public_room_code
+- host_user_id or host_session_id
+- selected_mode
+- selected_pack_id
+- status
+- settings_json
+- created_at
+- expires_at
+
+room_members:
+- id
+- room_id
+- user_id nullable
+- guest_session_id nullable
+- display_name_snapshot
+- joined_at
+- left_at nullable
+- is_host boolean
+
+game_sessions:
+- id
+- room_id
+- mode_id
+- started_at
+- ended_at
+- winning_member_id nullable
+- summary_json
+
+game_rounds:
+- id
+- game_session_id
+- round_number
+- prompt_id or prompt_text_snapshot
+- reveal_style
+- started_at
+- ended_at
+
+round_submissions:
+- id
+- round_id
+- room_member_id
+- answer_text
+- submitted_at
+
+round_votes:
+- id
+- round_id
+- voter_member_id
+- target_submission_id
+- created_at
+
+score_entries:
+- id
+- game_session_id
+- round_id nullable
+- room_member_id
+- points_delta
+- reason
+- created_at
+
+7.2 Security
+Use row-level security where appropriate.
+Users must only manage their own packs/content.
+Guests should have minimal persistent privileges.
+
+================================================================================
+8. AUTH AND ACCESS CONTROL
+================================================================================
+
+8.1 Auth requirements
+Implement:
+- email/password or magic link for registered accounts
+- guest access without forced signup
+- session handling
+- protected dashboard routes
+- safe transition path from guest to account later if possible
+
+8.2 Authorization
+Ensure:
+- only pack owners can edit/delete their packs
+- only room host can change room settings
+- only room host can start/end game
+- only valid room participants can submit answers/votes
+- players cannot vote for themselves if rules disallow it
+- duplicate submissions and duplicate votes are blocked server-side
+
+================================================================================
+9. REAL-TIME ROOM SERVER
+================================================================================
+
+This is critical.
+
+9.1 Rule
+The room server is the authority for active room state.
+
+9.2 Responsibilities
+- create room instances
+- track connected sockets
+- manage lobby state
+- manage ready state
+- manage game phase transitions
+- handle timers
+- validate actions
+- broadcast state updates
+- recover or rebuild state from persistence if needed
+- expire abandoned rooms
+
+9.3 Connection model
+Use WebSockets for room state synchronization.
+
+9.4 Events
+Define typed client-to-server and server-to-client events.
+
+Client-to-server examples:
+- join_room
+- leave_room
+- ready_up
+- unready
+- start_game
+- submit_answer
+- vote_submission
+- reveal_next
+- send_chat_message
+- kick_player
+- lock_room
+- end_game
+- reconnect_room
+
+Server-to-client examples:
+- room_state
+- room_joined
+- player_joined
+- player_left
+- player_ready_changed
+- game_started
+- round_started
+- timer_started
+- submissions_locked
+- reveal_state_changed
+- chat_message
+- scores_updated
+- game_ended
+- room_error
+
+9.5 Validation
+Server must validate:
+- room membership
+- phase correctness
+- duplicate actions
+- timing rules
+- host-only actions
+- answer length/content rules
+- vote validity
+
+================================================================================
+10. CHAT, VOICE, AND MEDIA
+================================================================================
+
+10.1 Text chat
+Implement room text chat in MVP.
+Requirements:
+- real-time updates
+- basic rate limiting
+- profanity filtering hook
+- optionally ephemeral messages only for MVP
+- optionally persist messages later, but not required first
+
+10.2 Voice chat
+Integrate one provider such as Daily or LiveKit.
+
+MVP requirements:
+- join voice room when joining game room
+- microphone mute/unmute
+- active participant indicators if easy
+- no fancy spatial audio
+- no recording
+- no moderation dashboard beyond host kick from game room
+
+10.3 Video/camera
+Do not fully implement in MVP unless time is abundant.
+Instead:
+- structure voice provider abstraction so camera can be added later
+- maybe add placeholder UI toggle disabled or hidden
+
+================================================================================
+11. FRONTEND REQUIREMENTS
+================================================================================
+
+11.1 Main pages
+Implement pages/screens roughly like:
+
+- Landing page
+- Login / signup page
+- Guest join page
+- Dashboard
+- My question packs page
+- Pack editor page
+- Create room flow
+- Join room flow
+- Lobby page
+- Live game room page
+- End game / results page
+
+11.2 UX principles
+- room join should be fast
+- host controls should be obvious
+- answer submission should be very simple
+- mobile browsers should not feel broken
+- avoid clutter
+- show game phase clearly
+- show timers clearly
+- show connection state if useful
+
+11.3 Room UI sections
+Game room UI should have:
+- header with room code / leave / settings
+- player roster
+- central gameplay area
+- prompt display
+- answer input or reveal panel
+- chat sidebar or drawer
+- score panel
+- voice controls
+
+11.4 Host controls
+Host controls should include:
+- start game
+- next phase if needed
+- lock room
+- kick player
+- end game
+
+================================================================================
+12. QUESTION PACK BUILDER
+================================================================================
+
+Registered users can create their own prompt packs.
+
+12.1 Required features
+- create pack
+- rename pack
+- add prompt
+- edit prompt
+- remove prompt
+- reorder prompts if easy
+- save pack
+- choose pack during room creation
+
+12.2 Validation
+- title required
+- prompt text required
+- reasonable length limits
+- no duplicate prompt IDs
+- owner-only editing
+
+12.3 Seed content
+Provide a default built-in pack with enough prompts to test gameplay.
+
+================================================================================
+13. SECURITY, RELIABILITY, AND ANTI-ABUSE
+================================================================================
+
+Implement a serious MVP, not a reckless one.
+
+13.1 Required protections
+- input validation everywhere
+- server-side validation for gameplay actions
+- basic rate limiting
+- room code entropy
+- room expiration
+- safe handling of guest sessions
+- host-only command enforcement
+- profanity filtering hooks
+- XSS-safe rendering
+- secure env var handling
+- no secrets in frontend bundle
+
+13.2 Reliability
+- reconnect support
+- stale room cleanup
+- heartbeat or ping/pong for sockets if needed
+- graceful handling when a host disconnects
+- define what happens if host leaves:
+  - either transfer host
+  - or end room
+Pick one and implement cleanly.
+
+13.3 Logging
+Add enough logs to debug:
+- room creation
+- joins/leaves
+- phase transitions
+- submission counts
+- errors
+- provider failures for voice
+
+================================================================================
+14. TESTING REQUIREMENTS
+================================================================================
+
+Add practical tests.
+
+14.1 Unit tests
+- game engine transitions
+- scoring rules
+- submission validation
+- vote validation
+- utility functions
+
+14.2 Integration tests
+- create room
+- join room
+- start game
+- submit answer
+- reveal answers
+- vote
+- score update
+- end game
+
+14.3 Frontend tests
+Minimal but useful tests for:
+- pack editor form
+- room join form
+- answer submission behavior
+
+================================================================================
+15. DEV EXPERIENCE
+================================================================================
+
+Set up the repo so it is easy for one student developer to run locally.
+
+15.1 Required docs
+Create:
+- README.md
+- docs/product-spec.md
+- docs/architecture.md
+- docs/local-development.md
+- docs/deployment.md
+- AGENTS.md
+
+15.2 AGENTS.md
+Include instructions for future coding agents:
+- repo layout
+- how to run app
+- how to run tests
+- coding conventions
+- done criteria
+- do-not rules
+- architecture rules
+
+15.3 Scripts
+Add scripts for:
+- install
+- dev
+- build
+- lint
+- test
+- typecheck
+- seed
+- migrate
+
+================================================================================
+16. ENVIRONMENT VARIABLES
+================================================================================
+
+Create an env.example with variables such as:
+
+Web app:
+- NEXT_PUBLIC_APP_URL
+- NEXT_PUBLIC_SUPABASE_URL
+- NEXT_PUBLIC_SUPABASE_ANON_KEY
+- NEXT_PUBLIC_VOICE_PROVIDER
+
+Server / room service:
+- SUPABASE_SERVICE_ROLE_KEY
+- SUPABASE_DB_URL if needed
+- ROOM_SERVER_SECRET
+- DAILY_API_KEY or LIVEKIT_API_KEY
+- DAILY_DOMAIN or LIVEKIT_URL
+
+Cloudflare / deployment:
+- CLOUDFLARE_ACCOUNT_ID
+- CLOUDFLARE_API_TOKEN if needed
+
+Also document where each env var is used and which side (client/server) may access it.
+
+================================================================================
+17. DEPLOYMENT REQUIREMENTS
+================================================================================
+
+Provide working deployment instructions for a student-friendly, low-cost setup.
+
+17.1 Preferred deployment target
+- frontend to Vercel or Cloudflare Pages
+- room server to Cloudflare Workers
+- database/auth/storage to Supabase
+- voice to Daily or LiveKit cloud
+
+17.2 Required deployment outputs
+Create:
+- deployment doc
+- build instructions
+- production env var checklist
+- notes on domain setup
+- notes on CORS/origin config
+- notes on websocket routing
+- notes on voice provider token generation flow
+
+17.3 Local development
+Document how to run:
+- frontend locally
+- room server locally
+- Supabase locally or with hosted dev instance
+- test users / seed data
+
+================================================================================
+18. DESIGN / UI GUIDANCE
+================================================================================
+
+Keep the UI clean and modern but lightweight.
+
+Style guidance:
+- dark mode default is acceptable
+- simple responsive layout
+- accessible contrast
+- obvious primary actions
+- minimal flashy animation
+- game prompt should be the focal point
+- scores and roster should be visible
+- chat should not overwhelm gameplay
+
+Do not spend too much time on branding polish before gameplay works.
+
+================================================================================
+19. IMPLEMENTATION ORDER
+================================================================================
+
+Build in this order unless a better dependency order is required.
+
+1. repo scaffolding
+2. shared packages and types
+3. database schema and migrations
+4. auth
+5. pack CRUD
+6. room creation/join flow
+7. websocket room server
+8. lobby state
+9. core game engine
+10. one playable mode
+11. room UI
+12. text chat
+13. voice integration
+14. reconnect logic
+15. tests
+16. deployment docs and env examples
+
+================================================================================
+20. DEFINITION OF DONE FOR MVP
+================================================================================
+
+The MVP is done when all of the following are true:
+
+- a guest can join a room
+- a registered user can create a room
+- a registered user can create and save a question pack
+- host can choose a pack and start a game
+- multiple players can join and see live synchronized state
+- all players can submit answers
+- answers can be revealed all at once or one at a time
+- votes and scores work
+- text chat works
+- voice chat works for microphone audio
+- reconnect after refresh works reasonably
+- deployment instructions are complete
+- local setup instructions are complete
+- core flows have tests
+- app is structured cleanly enough for future expansion
+
+================================================================================
+21. IMPORTANT DO-NOT RULES
+================================================================================
+
+Do NOT:
+- keep all gameplay logic in React components
+- use client as source of truth for scores/timers
+- hardcode one giant all-purpose game component
+- scatter event names without shared types
+- expose secrets to the browser
+- let guests edit saved packs that belong to accounts
+- build many game modes before one works end-to-end
+- implement full camera/video before audio is stable
+- skip docs
+- skip tests for the game engine
+
+================================================================================
+22. OUTPUT EXPECTATIONS
+================================================================================
+
+As you build, produce:
+- code
+- migrations
+- typed event contracts
+- docs
+- env.example
+- seed data
+- tests
+
+When making architecture choices, prefer:
+- clean simplicity
+- low cost
+- reliability
+- future extensibility
+- fast iteration for a solo student developer
+
+If a choice is ambiguous, choose the option that reduces cost and implementation complexity while keeping the architecture sound.
+
+================================================================================
+23. OPTIONAL POST-MVP IDEAS (DO NOT BUILD NOW UNLESS ASKED)
+================================================================================
+
+Possible later additions:
+- camera/video support
+- public rooms
+- matchmaking
+- social graph / friends
+- pack sharing marketplace
+- moderation admin panel
+- mobile app wrapper
+- spectator mode
+- hidden role party modes
+- stream mode
+- persistent player stats
+- custom avatars
+- host co-admins
+
+Do not implement these unless they clearly fit after MVP is working.
+
+================================================================================
+24. FINAL EXECUTION DIRECTIVE
+================================================================================
+
+Start by scaffolding the repo and documentation, then create the shared types and schema, then implement the MVP in small verifiable steps.
+
+At every step:
+- keep code production-structured
+- keep types explicit
+- keep docs updated
+- keep the architecture aligned with server-authoritative room state
+- make the app actually runnable
+
+If necessary, choose practicality over perfection, but do not compromise the core architecture.
+
+End goal:
+A real, deployable, low-cost online multiplayer party game platform MVP for a student founder.
