@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-ink text-mist antialiased;
+  background-image:
+    radial-gradient(circle at top left, rgba(166, 255, 203, 0.18), transparent 30%),
+    radial-gradient(circle at top right, rgba(255, 138, 91, 0.14), transparent 28%),
+    linear-gradient(180deg, #081214 0%, #0d1b1e 100%);
+  min-height: 100vh;
+}
+
+a {
+  @apply text-neon transition hover:text-white;
+}
+
+input,
+textarea,
+select {
+  @apply w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-mist outline-none transition placeholder:text-white/35 focus:border-neon;
+}
+
+button {
+  @apply transition;
+}
+

@@ -1,0 +1,10 @@
+name = "imposter-room-server"
+main = "src/index.ts"
+compatibility_date = "2026-04-13"
+
+[vars]
+ROOM_SERVER_SECRET = "replace-me"
+
+[observability.logs]
+enabled = true
+

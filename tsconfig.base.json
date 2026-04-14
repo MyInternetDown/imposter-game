@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowJs": false,
+    "checkJs": false,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@imposter/types": ["packages/types/src/index.ts"],
+      "@imposter/game-engine": ["packages/game-engine/src/index.ts"],
+      "@imposter/shared": ["packages/shared/src/index.ts"],
+      "@imposter/db": ["packages/db/src/index.ts"],
+      "@imposter/ui": ["packages/ui/src/index.ts"],
+      "@imposter/voice": ["packages/voice/src/index.ts"]
+    }
+  }
+}
+
