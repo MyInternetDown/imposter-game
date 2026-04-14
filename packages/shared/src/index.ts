@@ -34,6 +34,10 @@ export function generateRoomCode(length = 5): string {
   }).join("");
 }
 
+export function generateSessionToken(): string {
+  return crypto.randomUUID().replace(/-/g, "");
+}
+
 export function nowIso(): string {
   return new Date().toISOString();
 }
@@ -52,6 +56,13 @@ export function clampText(input: string, maxLength: number): string {
   return input.trim().slice(0, maxLength);
 }
 
+export function mergeRoomSettings(overrides?: Partial<RoomSettings>): RoomSettings {
+  return {
+    ...defaultRoomSettings,
+    ...overrides,
+  };
+}
+
 export function profanityCheck(input: string): { clean: boolean; reason?: string } {
   const banned = ["slur-placeholder"];
   const normalized = input.toLowerCase();
@@ -63,4 +74,3 @@ export function profanityCheck(input: string): { clean: boolean; reason?: string
 
   return { clean: true };
 }
-

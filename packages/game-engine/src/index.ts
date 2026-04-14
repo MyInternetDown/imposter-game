@@ -31,6 +31,10 @@ export function createInitialRoomState({
 }
 
 export function startGame(room: RoomState, prompts: PromptItem[]): RoomState {
+  if (room.phase !== "lobby") {
+    throw new Error("Game can only start from the lobby.");
+  }
+
   if (room.players.length < 2) {
     throw new Error("At least two players are required to start the game.");
   }
@@ -53,6 +57,26 @@ export function startGame(room: RoomState, prompts: PromptItem[]): RoomState {
       votes: [],
       revealCursor: 0,
     },
+  };
+}
+
+export function setPlayerReady(
+  room: RoomState,
+  playerId: string,
+  ready: boolean,
+): RoomState {
+  const player = room.players.find((item) => item.id === playerId);
+
+  if (!player) {
+    throw new Error("Player not found in room.");
+  }
+
+  return {
+    ...room,
+    updatedAt: nowIso(),
+    players: room.players.map((item) =>
+      item.id === playerId ? { ...item, ready } : item,
+    ),
   };
 }
 
@@ -163,4 +187,3 @@ export function buildMvpRoundPreview({
     })),
   };
 }
-

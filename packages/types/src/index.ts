@@ -33,6 +33,12 @@ export interface PlayerState {
   role: PlayerRole;
 }
 
+export interface RoomViewer {
+  playerId: string;
+  token: string;
+  isHost: boolean;
+}
+
 export interface PromptItem {
   id: string;
   text: string;
@@ -87,10 +93,49 @@ export interface RoomSummary {
 
 export interface CreateRoomRequest {
   hostName: string;
+  settings?: Partial<RoomSettings>;
 }
 
 export interface JoinRoomRequest {
   displayName: string;
+}
+
+export interface ReadyRoomRequest {
+  ready: boolean;
+}
+
+export interface RoomActionResponse {
+  room: RoomState;
+  summary: RoomSummary;
+  viewer?: RoomViewer;
+}
+
+export interface CreateRoomResponse extends RoomActionResponse {
+  viewer: RoomViewer;
+}
+
+export interface JoinRoomResponse extends RoomActionResponse {
+  viewer: RoomViewer;
+}
+
+export interface GetRoomResponse extends RoomActionResponse {}
+
+export type RoomErrorCode =
+  | "ROOM_NOT_FOUND"
+  | "ROOM_LOCKED"
+  | "ROOM_FULL"
+  | "DUPLICATE_DISPLAY_NAME"
+  | "UNAUTHORIZED"
+  | "HOST_ONLY"
+  | "INVALID_PHASE"
+  | "NOT_ENOUGH_PLAYERS"
+  | "INVALID_INPUT";
+
+export interface RoomErrorResponse {
+  error: {
+    code: RoomErrorCode;
+    message: string;
+  };
 }
 
 export interface RoomEventMap {
@@ -105,4 +150,3 @@ export interface RoomEventMap {
   scores_updated: { roomCode: RoomCode; players: PlayerState[] };
   room_error: { message: string };
 }
-
